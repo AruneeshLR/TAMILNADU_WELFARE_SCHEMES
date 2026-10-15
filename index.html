@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Nadu Welfare Schemes App</title>
+    <!-- Tailwind CSS for UI Layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tnHeader: '#FFB347',
+                        tnHeaderDark: '#E69526',
+                        tnNavy: '#17365D',
+                        tnBlueText: '#1428A0',
+                        tnBgLight: '#FFFBF5',
+                        tnCardLight: '#FFF4E1',
+                        tnGreenBg: '#EAF5D5',
+                        tnOrangeAccent: '#E65100'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Mobile Frame Aesthetics */
+        body {
+            background-color: #0f172a;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 sm:p-4">
+
+    <!-- Professional mobile-style sign-in gate -->
+    <section id="loginGate" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div class="w-full max-w-md overflow-hidden rounded-[30px] bg-white shadow-2xl">
+        <div class="relative overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-700 px-7 pb-8 pt-9 text-white">
+          <div class="absolute -right-10 -top-12 h-44 w-44 rounded-full bg-white/10"></div>
+          <div class="relative flex items-center gap-3">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30"><i class="fa-solid fa-landmark text-2xl"></i></div>
+            <div><p class="text-xs font-semibold uppercase tracking-[.2em] text-blue-100">Tamil Nadu</p><h1 class="text-xl font-extrabold">Welfare Connect</h1><p class="text-xs text-blue-100">Government scheme assistance</p></div>
+          </div>
+          <h2 id="loginHeading" class="relative mt-8 text-2xl font-bold">Welcome back</h2>
+          <p id="loginSubheading" class="relative mt-2 text-sm leading-6 text-blue-100">Sign in to explore welfare schemes, save useful schemes and get multilingual guidance.</p>
+        </div>
+        <form id="loginForm" class="space-y-4 px-7 py-7">
+          <div><label id="loginEmailLabel" for="loginEmail" class="mb-1.5 block text-sm font-semibold text-slate-700">Email address</label><input id="loginEmail" type="email" autocomplete="email" required placeholder="you@example.com" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-700 focus:ring-4 focus:ring-blue-100"></div>
+          <div><label id="loginPasswordLabel" for="loginPassword" class="mb-1.5 block text-sm font-semibold text-slate-700">Password</label><input id="loginPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-700 focus:ring-4 focus:ring-blue-100"></div>
+          <p id="loginError" class="hidden text-sm text-red-600" role="alert"></p>
+          <button id="loginSubmit" type="submit" class="w-full rounded-xl bg-blue-950 px-4 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-blue-900">Sign in</button>
+          <button id="loginModeToggle" type="button" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-blue-950 hover:bg-slate-50">New here? Create account</button>
+          <p id="loginNote" class="text-center text-[11px] leading-5 text-slate-500">Demo sign-in for this prototype. Production login requires secure backend authentication.</p>
+          <div class="text-center"><button type="button" onclick="document.getElementById('loginLanguage').classList.toggle('hidden')" class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-language mr-1"></i> Language / மொழி</button>
+            <div id="loginLanguage" class="hidden pt-3"><button type="button" onclick="setAppLanguage('en')" class="rounded-full border px-4 py-2 text-xs">English</button> <button type="button" onclick="setAppLanguage('ta')" class="rounded-full border px-4 py-2 text-xs">தமிழ்</button></div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- Mobile App Container Canvas -->
+    <div class="w-full max-w-md h-screen sm:h-[880px] bg-tnBgLight shadow-2xl sm:rounded-[36px] overflow-hidden flex flex-col relative border-0 sm:border-8 border-slate-800">
+        
+        <!-- App Header Section -->
+        <header class="bg-gradient-to-r from-tnHeader to-tnHeaderDark p-4 text-white shadow-md relative z-10 flex-shrink-0">
+            <!-- Top Bar -->
+            <div class="flex items-center justify-between">
+                <button id="navBackBtn" onclick="app.navigateBack()" class="text-3xl font-light hover:opacity-80 transition focus:outline-none w-8 text-left">
+                    <i class="fa-solid fa-bars text-xl" id="headerNavIcon"></i>
+                </button>
+                
+                <div class="flex-1 px-3">
+                    <h1 id="appTitleTa" class="text-2xl font-bold tracking-wide leading-tight">தமிழ்நாடு</h1>
+                    <div class="text-xs font-bold tracking-widest uppercase opacity-90">GOVERNMENT</div>
+                    <div id="appSubtitle" class="text-[10px] tracking-wider uppercase opacity-80">WELFARE SCHEMES</div>
+                </div>
+
+                <!-- Language Toggle and Logout -->
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="app.toggleLanguage()" class="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/40 flex items-center gap-1.5 transition text-xs font-semibold" aria-label="Switch language">
+                    <span id="langIndicator">EN / தமிழ்</span><i class="fa-solid fa-language text-sm"></i>
+                  </button>
+                  <button type="button" onclick="logoutUser()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-full border border-white/30 flex items-center gap-1.5 transition text-xs font-bold text-white" aria-label="Log out">
+                    <i class="fa-solid fa-right-from-bracket"></i><span id="logoutLabel">Log out</span>
+                  </button>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div id="searchContainer" class="mt-3 relative">
+                <input type="text" id="searchInput" oninput="app.handleSearch(this.value)" placeholder="Search schemes / திட்டங்களைத் தேடுக..." 
+                       class="w-full pl-9 pr-8 py-2 text-sm bg-white/95 text-slate-800 placeholder-slate-400 rounded-xl shadow-inner focus:outline-none focus:ring-2 focus:ring-tnNavy transition">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                <button id="clearSearchBtn" onclick="app.clearSearch()" class="hidden absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Screen Content -->
+        <main class="flex-1 overflow-y-auto hide-scrollbar relative pb-20">
+
+            <!-- SCREEN 0: HOME SCREEN -->
+            <section id="screenHome" class="p-4 space-y-5">
+                <!-- Featured Banner -->
+                <div onclick="app.openCategory('All')" class="bg-tnGreenBg p-5 rounded-2xl shadow-sm border border-emerald-100 cursor-pointer hover:shadow-md transition relative overflow-hidden group">
+                    <div class="absolute -right-4 -bottom-4 text-emerald-800/10 text-8xl transition transform group-hover:scale-110">
+                        <i class="fa-solid fa-landmark"></i>
+                    </div>
+                    <span class="inline-block px-2.5 py-0.5 bg-emerald-600 text-white text-[10px] font-bold tracking-wider uppercase rounded-full mb-2">Tamil Nadu Portal</span>
+                    <h2 class="text-xl font-bold text-tnNavy leading-tight" id="txtHomeBannerTitle">Tamil Nadu Government</h2>
+                    <p class="text-lg font-bold text-emerald-800" id="txtHomeBannerSub">Welfare Schemes Directory</p>
+                    <p class="text-xs text-slate-600 mt-2" id="txtHomeBannerCats">Education • Women • Pension • Farmers • Employment • Health</p>
+                    <div class="mt-4 flex items-center text-tnOrangeAccent font-bold text-sm">
+                        <span id="txtExploreBtn">Tap to explore all</span>
+                        <i class="fa-solid fa-arrow-right-long ml-2 text-xs transition transform group-hover:translate-x-1"></i>
+                    </div>
+                </div>
+
+                <!-- Section Title -->
+                <div>
+                    <h3 class="text-xl font-bold text-tnNavy" id="txtBrowseTitle">Browse Categories</h3>
+                    <p class="text-xs text-slate-500" id="txtBrowseSub">Select a department category to view active schemes</p>
+                </div>
+
+                <!-- Categories List -->
+                <div id="categoryCardsList" class="space-y-3">
+                    <!-- Dynamically Rendered Categories -->
+                </div>
+            </section>
+
+            <!-- SCREEN 1: SCHEME LIST SCREEN -->
+            <section id="screenList" class="hidden p-4 space-y-4">
+                
+                <!-- CM Banner Card -->
+                <div class="bg-tnCardLight p-4 rounded-2xl border border-amber-200/60 shadow-sm flex items-center space-x-4">
+                    <div class="w-20 h-20 rounded-full border-2 border-amber-400 overflow-hidden flex-shrink-0 bg-amber-100 flex items-center justify-center">
+                        <img src="data:image/jpeg;base64,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" alt="Chief Minister of Tamil Nadu" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div>
+                        <h4 class="text-base font-bold text-tnNavy leading-snug">Hon'ble Chief Minister</h4>
+                        <p class="text-xs font-semibold text-amber-900">Government of Tamil Nadu</p>
+                        <p class="text-[11px] text-slate-500 mt-1 italic" id="txtCmQuote">"Ensuring welfare reaches every doorstep in Tamil Nadu."</p>
+                    </div>
+                </div>
+
+                <!-- Automatically detected updates shared through the backend -->
+                <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4 space-y-2">
+                  <div class="flex items-center justify-between gap-2">
+                    <div><h3 class="font-bold text-tnNavy" id="updatesTitle">New scheme updates</h3><p class="text-xs text-slate-600" id="updatesStatus">Checking official sources…</p></div>
+                    <button onclick="loadSchemeUpdates(true)" class="rounded-full bg-tnNavy text-white px-3 py-2 text-xs font-bold">Refresh</button>
+                  </div>
+                  <div id="schemeUpdatesList" class="space-y-2"><p class="text-sm text-slate-600">Updates appear here after the backend checks official sources.</p></div>
+                  <p class="text-[10px] text-slate-500" id="updatesDisclaimer">Detected links need verification; always confirm details on the official portal.</p>
+                </div>
+
+                <!-- Filters & Category Chips -->
+                <div class="flex items-center space-x-2 overflow-x-auto hide-scrollbar py-1" id="categoryChips">
+                    <!-- Chips inserted dynamically -->
+                </div>
+
+                <!-- Scheme Table / Cards List -->
+                <div>
+                    <!-- List Header -->
+                    <div class="bg-amber-100/80 rounded-xl p-3 flex items-center text-xs font-bold text-tnNavy mb-2 border border-amber-200">
+                        <span class="w-12 text-center" id="txtSrNo">Sr. No</span>
+                        <span class="flex-1 ml-2" id="txtSchemeNameHeader">Scheme Name</span>
+                        <span class="w-8 text-center"><i class="fa-solid fa-bookmark text-amber-700"></i></span>
+                    </div>
+
+                    <!-- Scheme Dynamic List -->
+                    <div id="schemesContainer" class="divide-y divide-slate-100 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <!-- Dynamic Scheme Rows -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN 2: BOOKMARKS SCREEN -->
+            <section id="screenBookmarks" class="hidden p-4 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-tnNavy" id="txtBookmarksTitle">Saved Schemes</h3>
+                        <p class="text-xs text-slate-500" id="txtBookmarksSub">Your quick reference scheme list</p>
+                    </div>
+                    <span id="bookmarkCountBadge" class="bg-tnNavy text-white text-xs font-bold px-2.5 py-1 rounded-full">0</span>
+                </div>
+
+                <div id="bookmarksContainer" class="space-y-3">
+                    <!-- Dynamic Saved Schemes -->
+                </div>
+            </section>
+        </main>
+
+        <!-- SCHEME DETAILS MODAL SCREEN -->
+        <div id="schemeDetailsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex flex-col justify-end sm:justify-center p-0 sm:p-4 transition-opacity">
+            <div class="bg-white w-full max-w-md h-[90vh] sm:h-[750px] rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
+                <!-- Modal Top Navigation Bar -->
+                <div class="bg-gradient-to-r from-tnHeader to-tnHeaderDark p-4 text-white flex items-center justify-between flex-shrink-0 shadow-md">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="app.closeModal()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 text-white transition">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <h3 class="text-base font-bold tracking-wide" id="txtModalHeaderTitle">Scheme Details</h3>
+                    </div>
+                    <button id="modalBookmarkBtn" onclick="app.toggleModalBookmark()" class="text-white text-lg hover:text-amber-200 transition px-2">
+                        <i class="fa-regular fa-bookmark"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Scrollable Content -->
+                <div class="flex-1 overflow-y-auto p-5 space-y-5 bg-white text-slate-800">
+                    <div>
+                        <span id="modalCategoryTag" class="inline-block px-2.5 py-1 bg-sky-100 text-sky-800 text-[11px] font-bold rounded-md uppercase tracking-wider mb-2">Education</span>
+                        <h2 id="modalSchemeTitle" class="text-xl font-bold text-tnBlueText leading-snug">Scheme Full Title</h2>
+                    </div>
+
+                    <!-- Highlights Section -->
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-bold text-tnNavy flex items-center gap-2">
+                            <i class="fa-solid fa-star text-amber-500"></i>
+                            <span id="lblHighlights">Highlights</span>
+                        </h4>
+                        <div id="modalHighlights" class="bg-slate-50 p-3.5 rounded-xl text-xs leading-relaxed text-slate-700 border border-slate-100 space-y-1"></div>
+                    </div>
+
+                    <!-- Eligibility Section -->
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-bold text-tnNavy flex items-center gap-2">
+                            <i class="fa-solid fa-user-check text-emerald-600"></i>
+                            <span id="lblEligibility">Eligibility Requirements</span>
+                        </h4>
+                        <div id="modalEligibility" class="bg-slate-50 p-3.5 rounded-xl text-xs leading-relaxed text-slate-700 border border-slate-100"></div>
+                    </div>
+
+                    <!-- Required Documents -->
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-bold text-tnNavy flex items-center gap-2">
+                            <i class="fa-solid fa-file-invoice text-blue-600"></i>
+                            <span id="lblDocuments">Required Documents</span>
+                        </h4>
+                        <div id="modalDocuments" class="bg-slate-50 p-3.5 rounded-xl text-xs leading-relaxed text-slate-700 border border-slate-100"></div>
+                    </div>
+
+                    <!-- Steps to Apply -->
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-bold text-tnNavy flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-purple-600"></i>
+                            <span id="lblSteps">Steps to Apply</span>
+                        </h4>
+                        <div id="modalSteps" class="bg-slate-50 p-3.5 rounded-xl text-xs leading-relaxed text-slate-700 border border-slate-100"></div>
+                    </div>
+
+                    <!-- Important Information -->
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-bold text-tnNavy flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                            <span id="lblInfo">Important Notice</span>
+                        </h4>
+                        <div id="modalInfo" class="bg-amber-50 p-3.5 rounded-xl text-xs leading-relaxed text-amber-900 border border-amber-100"></div>
+                    </div>
+                </div>
+
+                <!-- Modal Bottom Action Bar -->
+                <div class="p-4 bg-slate-50 border-t border-slate-100 flex-shrink-0">
+                    <button onclick="app.openApplicationForm()" class="w-full py-3 bg-gradient-to-r from-tnNavy to-blue-900 text-white text-sm font-bold rounded-xl shadow-md hover:opacity-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span id="btnApplyNow">Apply For Scheme</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APPLICATION FORM SIMULATION DIALOG -->
+        <div id="applicationFormModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl p-6 space-y-4">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="text-lg font-bold text-tnNavy" id="txtApplyModalTitle">Scheme Application</h3>
+                    <button onclick="app.closeAppForm()" class="text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <form id="schemeAppForm" onsubmit="app.submitApplication(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblApplicantName">Applicant Full Name</label>
+                        <input type="text" required placeholder="e.g. M. Kanthasamy" class="w-full p-2.5 text-xs border rounded-xl focus:ring-2 focus:ring-tnNavy outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblAadhaar">Aadhaar Card Number</label>
+                        <input type="text" pattern="[0-9]{12}" required placeholder="12 Digit Aadhaar Number" class="w-full p-2.5 text-xs border rounded-xl focus:ring-2 focus:ring-tnNavy outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblDistrict">District</label>
+                        <select required class="w-full p-2.5 text-xs border rounded-xl focus:ring-2 focus:ring-tnNavy outline-none bg-white">
+                            <option value="">Select District</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Coimbatore">Coimbatore</option>
+                            <option value="Madurai">Madurai</option>
+                            <option value="Tiruchirappalli">Tiruchirappalli</option>
+                            <option value="Salem">Salem</option>
+                            <option value="Tirunelveli">Tirunelveli</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblPhone">Mobile Number</label>
+                        <input type="tel" pattern="[0-9]{10}" required placeholder="10 Digit Mobile Number" class="w-full p-2.5 text-xs border rounded-xl focus:ring-2 focus:ring-tnNavy outline-none">
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-check"></i>
+                            <span id="btnSubmitForm">Submit Application</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- App Bottom Navigation Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 h-16 flex items-center justify-around px-4 z-20 shadow-lg">
+            <button onclick="app.switchTab('home')" id="tabBtnHome" class="flex flex-col items-center gap-1 text-tnHeader font-bold transition">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px]" id="txtNavHome">Home</span>
+            </button>
+            <button onclick="app.switchTab('schemes')" id="tabBtnSchemes" class="flex flex-col items-center gap-1 text-slate-400 hover:text-tnNavy font-bold transition">
+                <i class="fa-solid fa-list-check text-lg"></i>
+                <span class="text-[10px]" id="txtNavSchemes">Schemes</span>
+            </button>
+            <button onclick="app.switchTab('bookmarks')" id="tabBtnBookmarks" class="flex flex-col items-center gap-1 text-slate-400 hover:text-tnNavy font-bold transition relative">
+                <i class="fa-solid fa-bookmark text-lg"></i>
+                <span class="text-[10px]" id="txtNavSaved">Bookmarks</span>
+            </button>
+        </nav>
+
+        <!-- AI Welfare Assistant (add-on; existing app screens are unchanged) -->
+        <button id="aiChatLauncher" type="button" aria-label="Open AI Welfare Assistant"
+            class="fixed bottom-20 right-4 sm:right-[calc(50%-190px)] z-[60] w-14 h-14 rounded-full bg-tnNavy text-white shadow-xl border-2 border-white flex items-center justify-center hover:scale-105 transition-transform">
+            <i class="fa-solid fa-robot text-xl"></i>
+            <span class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white"></span>
+        </button>
+
+        <section id="aiChatPanel" class="hidden fixed z-[70] bottom-4 right-3 left-3 sm:left-auto sm:right-[calc(50%-205px)] sm:w-[390px] h-[min(620px,calc(100vh-32px))] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex-col" aria-label="AI Welfare Assistant">
+            <header class="bg-gradient-to-r from-tnNavy to-blue-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center"><i class="fa-solid fa-robot text-lg"></i></div>
+                    <div><h3 class="font-bold text-sm" id="aiChatTitle">AI Welfare Assistant</h3><p class="text-[11px] text-white/80" id="aiChatSubtitle">Ask about Tamil Nadu schemes</p></div>
+                </div>
+                <button id="aiChatClose" class="w-8 h-8 rounded-full hover:bg-white/15" type="button" aria-label="Close chat"><i class="fa-solid fa-xmark"></i></button>
+            </header>
+            <div id="aiChatMessages" class="flex-1 overflow-y-auto p-3 space-y-3 bg-slate-50" aria-live="polite">
+                <div class="flex justify-start"><div class="max-w-[90%] rounded-2xl rounded-tl-sm bg-white border border-slate-200 p-3 text-sm text-slate-700 shadow-sm" id="aiChatWelcome">Vanakkam! I can help you understand the schemes listed in this app. Tell me whether you are a student, job seeker, woman, farmer, or looking for another type of support.</div></div>
+            </div>
+            <div class="px-3 pt-2 pb-3 bg-white border-t border-slate-200">
+                <div class="flex flex-wrap gap-2 mb-2" id="aiChatQuickQuestions">
+                    <button type="button" class="ai-quick-question text-[11px] px-2.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-tnNavy">Student scholarships</button>
+                    <button type="button" class="ai-quick-question text-[11px] px-2.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-tnNavy">Eligibility help</button>
+                    <button type="button" class="ai-quick-question text-[11px] px-2.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-tnNavy">Required documents</button>
+                </div>
+                <form id="aiChatForm" class="flex items-end gap-2">
+                    <textarea id="aiChatInput" rows="1" maxlength="1500" required placeholder="Type your question…" class="min-w-0 flex-1 resize-none max-h-24 rounded-2xl border border-slate-300 px-3 py-2.5 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-amber-400"></textarea>
+                    <button id="aiChatSend" type="submit" class="w-11 h-11 flex-shrink-0 rounded-full bg-tnNavy text-white flex items-center justify-center hover:bg-blue-900 disabled:opacity-50" aria-label="Send message"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+                <p class="text-[10px] text-slate-400 mt-2" id="aiChatDisclaimer">AI guidance can be wrong. Confirm current rules with the official department. Do not share Aadhaar or bank details.</p>
+            </div>
+        </section>
+
+        <!-- Notification Toast Box -->
+        <div id="toast" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-slate-900/90 text-white text-xs px-4 py-2.5 rounded-full shadow-lg z-50 transition-all opacity-0 pointer-events-none flex items-center gap-2 border border-slate-700">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span id="toastMsg">Action completed successfully</span>
+        </div>
+
+    </div>
+
+    <script>
+        // Data Store for Tamil Nadu Welfare Schemes
+        const SCHEMES_DATA = [
+            {
+                id: 1,
+                category: "Education",
+                icon: "🎓",
+                titleEn: "Tamil Nadu Naan Mudhalvan UPSC Prelims Scholarship Programme",
+                titleTa: "தமிழ்நாடு நான் முதல்வன் UPSC முதற்கட்டத் தேர்வு உதவித்தொகை திட்டம்",
+                highlightsEn: ["Financial aid of ₹7,500/month for 10 months.", "Aims to help 1,000 civil service aspirants annually.", "Direct Benefit Transfer (DBT) to bank accounts."],
+                highlightsTa: ["10 மாதங்களுக்கு மாதம் ₹7,500 நிதி உதவி.", "ஆண்டுதோறும் 1,000 குடிமைப்பணி தேர்வர்களுக்கு உதவி.", "நேரடி வங்கி பரிமாற்றம்."],
+                eligibilityEn: "Resident of Tamil Nadu, cleared UPSC preliminary screening test conducted by Naan Mudhalvan.",
+                eligibilityTa: "தமிழ்நாட்டில் வசிப்பவராகவும், நான் முதல்வன் மதிப்பீட்டுத் தேர்வில் தேர்ச்சி பெற்றவராகவும் இருக்க வேண்டும்.",
+                documentsEn: ["Aadhaar Card", "Graduation Degree Certificate", "Community Certificate", "Bank Passbook"],
+                documentsTa: ["ஆதார் அட்டை", "பட்டப்படிப்பு சான்றிதழ்", "சாதிச் சான்றிதழ்", "வங்கி கணக்கு புத்தகம்"],
+                stepsEn: ["1. Visit Naan Mudhalvan official portal.\n2. Register and take screening test.\n3. Upload required documents.\n4. Receive scholarship."],
+                stepsTa: ["1. நான் முதல்வன் இணையதளத்திற்குச் செல்லவும்.\n2. பதிவு செய்து தேர்வெழுதவும்.\n3. சான்றிதழ்களைப் பதிவேற்றவும்."],
+                infoEn: "Verification will be conducted by the Higher Education Department."
+            },
+            {
+                id: 2,
+                category: "Women",
+                icon: "👩",
+                titleEn: "Tamil Nadu Thaimaman Thanga Mothiram Thittam",
+                titleTa: "தமிழ்நாடு தாய்மாமன் தங்க மோதிரம் திட்டம்",
+                highlightsEn: ["Gold ring and financial assistance provided.", "Supports newly married women from low income households.", "Empowers women socially and economically."],
+                highlightsTa: ["தங்க மோதிரம் மற்றும் நிதி உதவி வழங்கப்படுகிறது.", "குறைந்த வருவாய் குடும்பங்களின் புதுமணப் பெண்களுக்கு உதவி."],
+                eligibilityEn: "Annual family income below prescribed threshold, resident of Tamil Nadu.",
+                eligibilityTa: "ஆண்டு வருமானம் நிர்ணயிக்கப்பட்ட வரம்பிற்குள் இருக்க வேண்டும்.",
+                documentsEn: ["Marriage Registration Certificate", "Income Certificate", "Aadhaar Card"],
+                documentsTa: ["திருமணப் பதிவுச் சான்றிதழ்", "வருமானச் சான்றிதழ்", "ஆதார் அட்டை"],
+                stepsEn: ["1. Apply through e-Sevai centers.\n2. Verification by Social Welfare officer.\n3. Benefit allocation."],
+                stepsTa: ["1. இ-சேவை மையம் மூலம் விண்ணப்பிக்கவும்.\n2. சமூக நல அலுவலர் சரிபார்ப்பு."],
+                infoEn: "Application must be submitted within 3 months of marriage."
+            },
+            {
+                id: 3,
+                category: "Education",
+                icon: "🚌",
+                titleEn: "Tamil Nadu Free Bus Pass Scheme for Students",
+                titleTa: "தமிழ்நாடு மாணவர்களுக்கான இலவச பேருந்து பயண அட்டை திட்டம்",
+                highlightsEn: ["100% free bus travel in state transport buses.", "Covers school and government college students.", "Reduces travel cost burden for families."],
+                highlightsTa: ["அரசுப் பேருந்துகளில் 100% இலவசப் பயணம்.", "பள்ளி மற்றும் அரசு கல்லூரி மாணவர்களுக்குப் பொருந்தும்."],
+                eligibilityEn: "Bona fide student studying in recognized schools/colleges in Tamil Nadu.",
+                eligibilityTa: "தமிழ்நாட்டில் அங்கீகரிக்கப்பட்ட பள்ளி/கல்லூரிகளில் பயிலும் மாணவர்கள்.",
+                documentsEn: ["School/College ID Card", "Ration Card copy", "Passport size photo"],
+                documentsTa: ["பள்ளி/கல்லூரி அடையாள அட்டை", "குடும்ப அட்டை நகல்", "புகைப்படம்"],
+                stepsEn: ["1. Submit form through school/college admin.\n2. Receive Smart Bus Card from transport office."],
+                stepsTa: ["1. பள்ளி நிர்வாகம் மூலம் விண்ணப்பம் சமர்ப்பிக்கவும்.\n2. ஸ்மார்ட் பஸ் கார்டு பெறவும்."],
+                infoEn: "Valid for academic year only."
+            },
+            {
+                id: 4,
+                category: "Employment",
+                icon: "💼",
+                titleEn: "Tamil Nadu Vettri Skill Training Assurance Scheme",
+                titleTa: "தமிழ்நாடு வெற்றி திறன் பயிற்சி உறுதி திட்டம்",
+                highlightsEn: ["Free industry-aligned technical skill training.", "Guaranteed placement support post training.", "Monthly stipend during training period."],
+                highlightsTa: ["இலவச தொழில்நுட்பத் திறன் பயிற்சி.", "பயிற்சிக்குப் பின் வேலைவாய்ப்பு உறுதி."],
+                eligibilityEn: "Unemployed youth aged 18 to 35 with minimum 10th standard qualification.",
+                eligibilityTa: "18 முதல் 35 வயது வரையிலான வேலைவாய்ப்பற்ற இளைஞர்கள் (10-ஆம் வகுப்பு தேர்ச்சி).",
+                documentsEn: ["Educational Qualification Certificates", "Aadhaar Card", "Transfer Certificate"],
+                documentsTa: ["கல்விச் சான்றிதழ்", "ஆதார் அட்டை", "மாற்றுச் சான்றிதழ்"],
+                stepsEn: ["1. Register on TN Skill Development Portal.\n2. Choose course and training center.\n3. Attend interview."],
+                stepsTa: ["1. தமிழ்நாடு திறன் மேம்பாட்டு இணையதளத்தில் பதிவு செய்யவும்.\n2. பயிற்சியைத் தேர்ந்தெடுக்கவும்."],
+                infoEn: "Courses certified by Tamil Nadu Skill Development Corporation (TNSDC)."
+            },
+            {
+                id: 5,
+                category: "Employment",
+                icon: "🤝",
+                titleEn: "Tamil Nadu Unemployment Assistance Scheme for Youth",
+                titleTa: "தமிழ்நாடு இளைஞர்களுக்கான வேலைவாய்ப்பின்மை உதவித்தொகை திட்டம்",
+                highlightsEn: ["Monthly allowance up to ₹1,000 for job seekers.", "Assistance provided for up to 3 consecutive years.", "Direct bank deposit."],
+                highlightsTa: ["மாதாந்திர வேலைவாய்ப்பின்மை உதவித்தொகை ₹1,000 வரை.", "3 ஆண்டுகள் வரை உதவித்தொகை வழங்கப்படும்."],
+                eligibilityEn: "Registered in TN Employment Exchange for at least 5 years without job.",
+                eligibilityTa: "வேலைவாய்ப்பு அலுவலகத்தில் பதிவு செய்து குறைந்தது 5 ஆண்டுகள் காத்திருப்பவர்.",
+                documentsEn: ["Employment Exchange Card", "Income Certificate", "Bank Account Passbook"],
+                documentsTa: ["வேலைவாய்ப்பு பதிவு அட்டை", "வருமானச் சான்றிதழ்", "வங்கி புத்தக நகல்"],
+                stepsEn: ["1. Submit application at District Employment Office or e-Sevai.\n2. Document verification."],
+                stepsTa: ["1. மாவட்ட வேலைவாய்ப்பு அலுவலகம் அல்லது இ-சேவை மையத்தில் விண்ணப்பிக்கவும்."],
+                infoEn: "Renewal required annually."
+            },
+            {
+                id: 6,
+                category: "Women",
+                icon: "🚌",
+                titleEn: "Tamil Nadu Magalir Payanam Scheme (Kalaignar Magalir Urimai)",
+                titleTa: "தமிழ்நாடு மகளிர் இலவச பேருந்து பயணம் திட்டம்",
+                highlightsEn: ["Zero fare travel for women in Town buses.", "Saves substantial monthly commuting expenses.", "Promotes female workforce participation."],
+                highlightsTa: ["நகரப் பேருந்துகளில் பெண்களுக்கு இலவசப் பயணம்.", "மாதாந்திரப் பயணச் செலவு மிச்சமாகிறது."],
+                eligibilityEn: "All women residents of Tamil Nadu.",
+                eligibilityTa: "தமிழ்நாட்டில் வசிக்கும் அனைத்துப் பெண்களும்.",
+                documentsEn: ["No separate application needed; valid proof for origin/destination."],
+                documentsTa: ["தனியாக விண்ணப்பம் தேவையில்லை."],
+                stepsEn: ["Board local pink-band town buses directly."],
+                stepsTa: ["சாதாரண நகரப் பேருந்துகளில் நேரடியாகப் பயணிக்கலாம்."],
+                infoEn: "Applicable on Ordinary Town Buses operated by State Transport Undertakings."
+            },
+            {
+                id: 7,
+                category: "Education",
+                icon: "💻",
+                titleEn: "Tamil Nadu Free Laptop Scheme for High School Students",
+                titleTa: "தமிழ்நாடு இலவச மடிக்கணினி திட்டம்",
+                highlightsEn: ["Free laptop provided with necessary software.", "Enhances digital literacy among students.", "Aids higher education preparation."],
+                highlightsTa: ["இலவச மடிக்கணினி வழங்கி டிஜிட்டல் கல்வியை ஊக்குவித்தல்."],
+                eligibilityEn: "Students passing 12th standard in Govt and Govt-aided schools.",
+                eligibilityTa: "அரசு மற்றும் அரசு உதவிபெறும் பள்ளிகளில் 12-ஆம் வகுப்பு பயிலும் மாணவர்கள்.",
+                documentsEn: ["School Identity Card", "Aadhaar Card"],
+                documentsTa: ["பள்ளி அடையாள அட்டை", "ஆதார் அட்டை"],
+                stepsEn: ["Distributed directly through respective schools."],
+                stepsTa: ["பள்ளிகள் மூலமாக நேரடியாக வழங்கப்படும்."],
+                infoEn: "Covers all Govt school students systematically."
+            },
+            {
+                id: 8,
+                category: "Farmers",
+                icon: "🌾",
+                titleEn: "Kalaignar All Village Agricultural Development Scheme",
+                titleTa: "கலைஞரின் அனைத்துக் கிராம ஒருங்கிணைந்த வேளாண் வளர்ச்சித் திட்டம்",
+                highlightsEn: ["Free drip irrigation kits and saplings.", "Soil health card distribution.", "Solar pump subsidies."],
+                highlightsTa: ["இலவச சொட்டுநீர்ப் பாசனக் கருவிகள் மற்றும் மரக்கன்றுகள்."],
+                eligibilityEn: "Small and marginal farmers holding agricultural land in TN.",
+                eligibilityTa: "தமிழ்நாட்டில் விவசாய நிலம் வைத்துள்ள சிறு, குறு விவசாயிகள்.",
+                documentsEn: ["Patta/Chitta Document", "Aadhaar Card", "Bank Account Details"],
+                documentsTa: ["பட்டா/சிட்டா நகல்", "ஆதார் அட்டை", "வங்கி விவரங்கள்"],
+                stepsEn: ["1. Register on Uzhavan App.\n2. Submit land documents."],
+                stepsTa: ["1. உழவன் செயலியில் பதிவு செய்யவும்.\n2. நில ஆவணங்களைச் சமர்ப்பிக்கவும்."],
+                infoEn: "Integrated with Uzhavan Mobile App."
+            },
+            {
+                id: 9,
+                category: "Health",
+                icon: "🏥",
+                titleEn: "Chief Minister Comprehensive Health Insurance Scheme (CMCHIS)",
+                titleTa: "முதலமைச்சரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டம்",
+                highlightsEn: ["Free cashless medical treatment up to ₹5 Lakh/year.", "Empaneled network of Govt and private hospitals.", "Covers critical surgeries."],
+                highlightsTa: ["ஆண்டுக்கு ₹5 லட்சம் வரை இலவச ரொக்கமில்லா மருத்துவ சிகிச்சை."],
+                eligibilityEn: "Families with annual income less than ₹1,20,000/year.",
+                eligibilityTa: "ஆண்டு வருமானம் ₹1,20,000-க்குள் உள்ள குடும்பங்கள்.",
+                documentsEn: ["Income Certificate", "Smart Ration Card", "Aadhaar Card"],
+                documentsTa: ["வருமானச் சான்றிதழ்", "ஸ்மார்ட் ரேஷன் கார்டு", "ஆதார் அட்டை"],
+                stepsEn: ["1. Visit District Kiosk/e-Sevai with Smart Card.\n2. Enroll biometric details.\n3. Receive CMCHIS card."],
+                stepsTa: ["1. மாவட்ட மையத்தில் ஸ்மார்ட் கார்டுடன் செல்லவும்.\n2. பயோமெட்ரிக் பதிவு செய்து கார்டு பெறவும்."],
+                infoEn: "Includes helpline 1800 425 3993."
+            },
+            {"id": 10, "category": "Education", "icon": "👩‍🎓", "titleEn": "Pudhumai Penn Scheme", "titleTa": "புதுமைப் பெண் திட்டம்", "highlightsEn": ["Monthly financial help for girl students in higher education."], "highlightsTa": ["உயர்கல்வி பயிலும் மாணவிகளுக்கு மாதாந்திர நிதி உதவி."], "eligibilityEn": "Girls who studied in government schools and are now in college/ITI/diploma.", "eligibilityTa": "அரசுப் பள்ளியில் படித்து தற்போது கல்லூரி/ITI/டிப்ளமோ பயிலும் மாணவிகள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 11, "category": "Education", "icon": "👨‍🎓", "titleEn": "Tamil Pudhalvan Scheme", "titleTa": "தமிழ்ப் புதல்வன் திட்டம்", "highlightsEn": ["Monthly financial help for boy students in higher education."], "highlightsTa": ["உயர்கல்வி பயிலும் மாணவர்களுக்கு மாதாந்திர நிதி உதவி."], "eligibilityEn": "Boys who studied in government schools and are now in higher education.", "eligibilityTa": "அரசுப் பள்ளியில் படித்து உயர்கல்வி பயிலும் மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 12, "category": "Employment", "icon": "🚀", "titleEn": "Naan Mudhalvan Scheme", "titleTa": "நான் முதல்வன் திட்டம்", "highlightsEn": ["Free skill training and career guidance for students and youth."], "highlightsTa": ["மாணவர்கள், இளைஞர்களுக்கு இலவச திறன் பயிற்சி மற்றும் தொழில் வழிகாட்டல்."], "eligibilityEn": "Students and youth of Tamil Nadu (age limits per course). Reported renamed Thiran Tamil Nadu.", "eligibilityTa": "தமிழ்நாட்டு மாணவர்கள், இளைஞர்கள். திறன் தமிழ்நாடு எனப் பெயர் மாற்றம் எனத் தகவல்.", "documentsEn": ["Aadhaar Card", "Educational Certificates", "Community Certificate", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "கல்விச் சான்றிதழ்கள்", "சாதிச் சான்றிதழ்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 13, "category": "Education", "icon": "🍽️", "titleEn": "Chief Minister's Breakfast Scheme", "titleTa": "முதலமைச்சரின் காலை உணவுத் திட்டம்", "highlightsEn": ["Free nutritious breakfast in government schools (reported expanded to classes 6 to 8)."], "highlightsTa": ["அரசுப் பள்ளிகளில் இலவச காலை உணவு (6 முதல் 8 வகுப்பு வரை விரிவாக்கம் எனத் தகவல்)."], "eligibilityEn": "Students of government and aided schools.", "eligibilityTa": "அரசு மற்றும் அரசு உதவிபெறும் பள்ளி மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 14, "category": "Women", "icon": "💍", "titleEn": "Moovalur Ramamirtham Ammaiyar Ninaivu Marriage Assistance Scheme", "titleTa": "மூவலூர் ராமாமிர்தம் அம்மையார் நினைவு திருமண நிதியுதவித் திட்டம்", "highlightsEn": ["Marriage assistance for brides from eligible families."], "highlightsTa": ["தகுதியுள்ள குடும்பப் பெண்களுக்கு திருமண நிதியுதவி."], "eligibilityEn": "Brides from low-income families, with education and age conditions.", "eligibilityTa": "குறைந்த வருமானக் குடும்பப் பெண்கள்; கல்வி மற்றும் வயது நிபந்தனைகளுடன்.", "documentsEn": ["Aadhaar Card", "Smart Ration Card", "Income Certificate", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "ஸ்மார்ட் ரேஷன் கார்டு", "வருமானச் சான்றிதழ்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 15, "category": "Farmers", "icon": "🌾", "titleEn": "Chief Minister's Uzhavar Pathukappu Thittam", "titleTa": "முதலமைச்சரின் உழவர் பாதுகாப்புத் திட்டம்", "highlightsEn": ["Social security support for registered farmers and agricultural workers."], "highlightsTa": ["பதிவு பெற்ற விவசாயிகள், விவசாயத் தொழிலாளர்களுக்கு சமூகப் பாதுகாப்பு உதவி."], "eligibilityEn": "Registered farmers and farm labourers of Tamil Nadu.", "eligibilityTa": "தமிழ்நாட்டின் பதிவு பெற்ற விவசாயிகள், விவசாயத் தொழிலாளர்கள்.", "documentsEn": ["Aadhaar Card", "Land Records (Patta/Chitta)", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "நில ஆவணங்கள் (பட்டா/சிட்டா)", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 16, "category": "Pension", "icon": "👵", "titleEn": "Destitute Widow Pension Scheme", "titleTa": "ஆதரவற்ற விதவைகள் ஓய்வூதியம்", "highlightsEn": ["Monthly pension for destitute widows."], "highlightsTa": ["ஆதரவற்ற விதவைகளுக்கு மாதாந்திர ஓய்வூதியம்."], "eligibilityEn": "Widows with no means of support, residents of Tamil Nadu.", "eligibilityTa": "ஆதரவற்ற, தமிழ்நாட்டில் வசிக்கும் விதவைகள்.", "documentsEn": ["Aadhaar Card", "Smart Ration Card", "Age/Status Proof", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "ஸ்மார்ட் ரேஷன் கார்டு", "வயது/நிலைச் சான்று", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at e-Sevai / Taluk office.\n2. Verification by the Revenue officer.\n3. Pension credited to your bank account."], "stepsTa": ["1. இ-சேவை / வட்டாட்சியர் அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. வருவாய் அலுவலர் சரிபார்ப்பு.\n3. ஓய்வூதியம் வங்கிக் கணக்கில் வரவு."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 17, "category": "Pension", "icon": "👩", "titleEn": "Destitute/Deserted Wives Pension Scheme", "titleTa": "கணவனால் கைவிடப்பட்ட பெண்களுக்கான ஓய்வூதியம்", "highlightsEn": ["Monthly pension for women deserted by their husbands."], "highlightsTa": ["கணவரால் கைவிடப்பட்ட பெண்களுக்கு மாதாந்திர ஓய்வூதியம்."], "eligibilityEn": "Deserted women without support, subject to the prescribed conditions.", "eligibilityTa": "ஆதரவற்ற, கைவிடப்பட்ட பெண்கள்; விதிமுறைகளுக்கு உட்பட்டு.", "documentsEn": ["Aadhaar Card", "Smart Ration Card", "Age/Status Proof", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "ஸ்மார்ட் ரேஷன் கார்டு", "வயது/நிலைச் சான்று", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at e-Sevai / Taluk office.\n2. Verification by the Revenue officer.\n3. Pension credited to your bank account."], "stepsTa": ["1. இ-சேவை / வட்டாட்சியர் அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. வருவாய் அலுவலர் சரிபார்ப்பு.\n3. ஓய்வூதியம் வங்கிக் கணக்கில் வரவு."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 18, "category": "Pension", "icon": "👩", "titleEn": "Unmarried Women Pension Scheme", "titleTa": "திருமணமாகாத பெண்களுக்கான ஓய்வூதியம்", "highlightsEn": ["Monthly pension for older unmarried women without support."], "highlightsTa": ["ஆதரவற்ற, வயதான திருமணமாகாத பெண்களுக்கு மாதாந்திர ஓய்வூதியம்."], "eligibilityEn": "Unmarried women above the prescribed age, with no means of support.", "eligibilityTa": "நிர்ணயிக்கப்பட்ட வயதிற்கு மேற்பட்ட, ஆதரவற்ற திருமணமாகாத பெண்கள்.", "documentsEn": ["Aadhaar Card", "Smart Ration Card", "Age/Status Proof", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "ஸ்மார்ட் ரேஷன் கார்டு", "வயது/நிலைச் சான்று", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at e-Sevai / Taluk office.\n2. Verification by the Revenue officer.\n3. Pension credited to your bank account."], "stepsTa": ["1. இ-சேவை / வட்டாட்சியர் அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. வருவாய் அலுவலர் சரிபார்ப்பு.\n3. ஓய்வூதியம் வங்கிக் கணக்கில் வரவு."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 19, "category": "Pension", "icon": "♿", "titleEn": "Differently Abled Pension Scheme", "titleTa": "மாற்றுத்திறனாளிகளுக்கான ஓய்வூதியம்", "highlightsEn": ["Monthly pension for persons with disabilities."], "highlightsTa": ["மாற்றுத்திறனாளிகளுக்கு மாதாந்திர ஓய்வூதியம்."], "eligibilityEn": "Persons with the prescribed degree of disability and low income.", "eligibilityTa": "நிர்ணயிக்கப்பட்ட அளவு பாதிப்புள்ள, குறைந்த வருமானம் உள்ள மாற்றுத்திறனாளிகள்.", "documentsEn": ["Aadhaar Card", "Smart Ration Card", "Age/Status Proof", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "ஸ்மார்ட் ரேஷன் கார்டு", "வயது/நிலைச் சான்று", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at e-Sevai / Taluk office.\n2. Verification by the Revenue officer.\n3. Pension credited to your bank account."], "stepsTa": ["1. இ-சேவை / வட்டாட்சியர் அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. வருவாய் அலுவலர் சரிபார்ப்பு.\n3. ஓய்வூதியம் வங்கிக் கணக்கில் வரவு."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 20, "category": "Pension", "icon": "🧓", "titleEn": "Old Age Pension Scheme", "titleTa": "முதியோர் ஓய்வூதியத் திட்டம்", "highlightsEn": ["Monthly pension for destitute senior citizens."], "highlightsTa": ["ஆதரவற்ற முதியோருக்கு மாதாந்திர ஓய்வூதியம்."], "eligibilityEn": "Senior citizens above the prescribed age with no means of support.", "eligibilityTa": "நிர்ணயிக்கப்பட்ட வயதிற்கு மேற்பட்ட ஆதரவற்ற முதியோர்.", "documentsEn": ["Aadhaar Card", "Smart Ration Card", "Age/Status Proof", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "ஸ்மார்ட் ரேஷன் கார்டு", "வயது/நிலைச் சான்று", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at e-Sevai / Taluk office.\n2. Verification by the Revenue officer.\n3. Pension credited to your bank account."], "stepsTa": ["1. இ-சேவை / வட்டாட்சியர் அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. வருவாய் அலுவலர் சரிபார்ப்பு.\n3. ஓய்வூதியம் வங்கிக் கணக்கில் வரவு."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 21, "category": "Differently Abled", "icon": "♿", "titleEn": "Tamil Nadu Differently Abled Persons Welfare Schemes", "titleTa": "தமிழ்நாடு மாற்றுத்திறனாளிகள் நலத் திட்டங்கள்", "highlightsEn": ["Group of schemes: aids and appliances, self-employment help, education and care support."], "highlightsTa": ["உதவிக் கருவிகள், சுயதொழில் உதவி, கல்வி மற்றும் பராமரிப்பு உதவிகள் அடங்கிய திட்டத் தொகுப்பு."], "eligibilityEn": "Persons with disabilities holding a disability certificate / UDID.", "eligibilityTa": "மாற்றுத்திறனாளி சான்று / UDID உள்ளவர்கள்.", "documentsEn": ["Disability Certificate / UDID", "Aadhaar Card", "Photo", "Bank Passbook"], "documentsTa": ["மாற்றுத்திறனாளி சான்று / UDID", "ஆதார் அட்டை", "புகைப்படம்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at the District Differently Abled Welfare Office.\n2. Submit certificate and documents.\n3. Verification and approval."], "stepsTa": ["1. மாவட்ட மாற்றுத்திறனாளிகள் நல அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. சான்றிதழ் மற்றும் ஆவணங்களை அளிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 22, "category": "Differently Abled", "icon": "🚍", "titleEn": "Travel Concession for Differently Abled Persons", "titleTa": "மாற்றுத்திறனாளிகளுக்கான பயணச் சலுகை", "highlightsEn": ["Free or concessional travel in state transport buses."], "highlightsTa": ["அரசுப் பேருந்துகளில் இலவச அல்லது சலுகைப் பயணம்."], "eligibilityEn": "Persons with disabilities with a valid ID/certificate.", "eligibilityTa": "செல்லுபடியாகும் அடையாள அட்டை/சான்று உள்ள மாற்றுத்திறனாளிகள்.", "documentsEn": ["Disability Certificate / UDID", "Aadhaar Card", "Photo", "Bank Passbook"], "documentsTa": ["மாற்றுத்திறனாளி சான்று / UDID", "ஆதார் அட்டை", "புகைப்படம்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at the District Differently Abled Welfare Office.\n2. Submit certificate and documents.\n3. Verification and approval."], "stepsTa": ["1. மாவட்ட மாற்றுத்திறனாளிகள் நல அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. சான்றிதழ் மற்றும் ஆவணங்களை அளிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 23, "category": "Differently Abled", "icon": "🎓", "titleEn": "Scholarship for Differently Abled Students", "titleTa": "மாற்றுத்திறனாளி மாணவர்களுக்கான கல்வி உதவித்தொகை", "highlightsEn": ["Scholarship and education support for students with disabilities."], "highlightsTa": ["மாற்றுத்திறனாளி மாணவர்களுக்கு கல்வி உதவித்தொகை மற்றும் ஆதரவு."], "eligibilityEn": "Students with disabilities studying from school to college level.", "eligibilityTa": "பள்ளி முதல் கல்லூரி வரை பயிலும் மாற்றுத்திறனாளி மாணவர்கள்.", "documentsEn": ["Disability Certificate / UDID", "Aadhaar Card", "Photo", "Bank Passbook"], "documentsTa": ["மாற்றுத்திறனாளி சான்று / UDID", "ஆதார் அட்டை", "புகைப்படம்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply at the District Differently Abled Welfare Office.\n2. Submit certificate and documents.\n3. Verification and approval."], "stepsTa": ["1. மாவட்ட மாற்றுத்திறனாளிகள் நல அலுவலகத்தில் விண்ணப்பிக்கவும்.\n2. சான்றிதழ் மற்றும் ஆவணங்களை அளிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 24, "category": "Education", "icon": "📚", "titleEn": "Educational Assistance for BC Students", "titleTa": "பிற்படுத்தப்பட்டோர் மாணவர்களுக்கான கல்வி உதவி", "highlightsEn": ["Educational assistance for Backward Class students."], "highlightsTa": ["பிற்படுத்தப்பட்ட வகுப்பு மாணவர்களுக்கு கல்வி உதவி."], "eligibilityEn": "BC students from eligible families as per income limit.", "eligibilityTa": "வருமான வரம்புக்குட்பட்ட பிற்படுத்தப்பட்ட மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 25, "category": "Education", "icon": "📚", "titleEn": "Educational Assistance for MBC Students", "titleTa": "மிகவும் பிற்படுத்தப்பட்டோர் மாணவர்களுக்கான கல்வி உதவி", "highlightsEn": ["Educational assistance for Most Backward Class students."], "highlightsTa": ["மிகவும் பிற்படுத்தப்பட்ட வகுப்பு மாணவர்களுக்கு கல்வி உதவி."], "eligibilityEn": "MBC students from eligible families as per income limit.", "eligibilityTa": "வருமான வரம்புக்குட்பட்ட மிகவும் பிற்படுத்தப்பட்ட மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 26, "category": "Education", "icon": "🎓", "titleEn": "Post-Matric Scholarship for BC Students", "titleTa": "பிற்படுத்தப்பட்டோருக்கான மேல்நிலைக் கல்வி உதவித்தொகை", "highlightsEn": ["Scholarship for BC students after Class 10."], "highlightsTa": ["10-ஆம் வகுப்பிற்குப் பிறகு பயிலும் BC மாணவர்களுக்கு உதவித்தொகை."], "eligibilityEn": "BC students studying post-matric courses within the income limit.", "eligibilityTa": "வருமான வரம்புக்குள் மேல்நிலைக் கல்வி பயிலும் BC மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 27, "category": "Education", "icon": "🎓", "titleEn": "Post-Matric Scholarship for MBC Students", "titleTa": "மிகவும் பிற்படுத்தப்பட்டோருக்கான மேல்நிலைக் கல்வி உதவித்தொகை", "highlightsEn": ["Scholarship for MBC students after Class 10."], "highlightsTa": ["10-ஆம் வகுப்பிற்குப் பிறகு பயிலும் MBC மாணவர்களுக்கு உதவித்தொகை."], "eligibilityEn": "MBC students studying post-matric courses within the income limit.", "eligibilityTa": "வருமான வரம்புக்குள் மேல்நிலைக் கல்வி பயிலும் MBC மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 28, "category": "Education", "icon": "🆓", "titleEn": "Free Education Scheme for BC/MBC/DNC Students", "titleTa": "BC/MBC/DNC மாணவர்களுக்கான இலவசக் கல்வித் திட்டம்", "highlightsEn": ["Tuition and other fee support for eligible students."], "highlightsTa": ["தகுதியுள்ள மாணவர்களுக்கு கல்விக் கட்டண உதவி."], "eligibilityEn": "BC, MBC and DNC students as per the scheme norms.", "eligibilityTa": "திட்ட விதிகளின்படி BC, MBC, DNC மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 29, "category": "Education", "icon": "👧", "titleEn": "Rural Girls' Incentive Scheme", "titleTa": "கிராமப்புற மாணவிகளுக்கான ஊக்கத்தொகை", "highlightsEn": ["Incentive to encourage rural girl students to continue school."], "highlightsTa": ["கிராமப்புற மாணவிகள் படிப்பைத் தொடர ஊக்கத்தொகை."], "eligibilityEn": "Girl students in rural areas studying in government schools.", "eligibilityTa": "கிராமப்புற அரசுப் பள்ளி மாணவிகள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 30, "category": "Education", "icon": "🚲", "titleEn": "Free Bicycle Scheme", "titleTa": "இலவச மிதிவண்டி வழங்கும் திட்டம்", "highlightsEn": ["Free bicycles for higher secondary students (new-branded version with helmets reported)."], "highlightsTa": ["மேல்நிலை மாணவர்களுக்கு இலவச மிதிவண்டி (தலைக்கவசத்துடன் புதிய திட்டம் எனத் தகவல்)."], "eligibilityEn": "Class XI students of government and aided schools.", "eligibilityTa": "அரசு மற்றும் உதவிபெறும் பள்ளி 11-ஆம் வகுப்பு மாணவர்கள்.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 31, "category": "Housing", "icon": "🏠", "titleEn": "Free Hostel Scheme", "titleTa": "இலவச விடுதி வசதி", "highlightsEn": ["Free hostel accommodation and food for eligible students."], "highlightsTa": ["தகுதியுள்ள மாணவர்களுக்கு இலவச விடுதி மற்றும் உணவு."], "eligibilityEn": "Students from eligible communities studying away from home.", "eligibilityTa": "வீட்டை விட்டு விலகிப் படிக்கும் தகுதியுள்ள சமூக மாணவர்கள்.", "documentsEn": ["Aadhaar Card", "Income Certificate", "Community Certificate", "Residence Proof"], "documentsTa": ["ஆதார் அட்டை", "வருமானச் சான்றிதழ்", "சாதிச் சான்றிதழ்", "இருப்பிடச் சான்று"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 32, "category": "Housing", "icon": "🛏️", "titleEn": "Boarding Grant Scheme", "titleTa": "தங்கும் உதவித்தொகை", "highlightsEn": ["Boarding grant for students who cannot get a hostel seat."], "highlightsTa": ["விடுதியில் இடம் கிடைக்காத மாணவர்களுக்கு தங்கும் உதவித்தொகை."], "eligibilityEn": "Eligible students not staying in a hostel.", "eligibilityTa": "விடுதியில் தங்காத தகுதியுள்ள மாணவர்கள்.", "documentsEn": ["Aadhaar Card", "Income Certificate", "Community Certificate", "Residence Proof"], "documentsTa": ["ஆதார் அட்டை", "வருமானச் சான்றிதழ்", "சாதிச் சான்றிதழ்", "இருப்பிடச் சான்று"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 33, "category": "Housing", "icon": "📜", "titleEn": "Free House Site Patta Scheme", "titleTa": "இலவச வீட்டுமனைப் பட்டா", "highlightsEn": ["Free house-site patta for landless poor families."], "highlightsTa": ["நிலமற்ற ஏழைக் குடும்பங்களுக்கு இலவச வீட்டுமனைப் பட்டா."], "eligibilityEn": "Landless poor families with no house site in Tamil Nadu.", "eligibilityTa": "தமிழ்நாட்டில் வீட்டுமனை இல்லாத நிலமற்ற ஏழைக் குடும்பங்கள்.", "documentsEn": ["Aadhaar Card", "Income Certificate", "Community Certificate", "Residence Proof"], "documentsTa": ["ஆதார் அட்டை", "வருமானச் சான்றிதழ்", "சாதிச் சான்றிதழ்", "இருப்பிடச் சான்று"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 34, "category": "Employment", "icon": "🧰", "titleEn": "Supply of Free Tools Scheme", "titleTa": "இலவச கருவிகள் வழங்கும் திட்டம்", "highlightsEn": ["Free tool kits for traditional artisans and skilled workers."], "highlightsTa": ["பாரம்பரியத் தொழிலாளர்கள், திறன் பணியாளர்களுக்கு இலவச கருவிகள்."], "eligibilityEn": "Eligible artisans and workers in the notified trades.", "eligibilityTa": "அறிவிக்கப்பட்ட தொழில்களைச் சேர்ந்த தகுதியுள்ள தொழிலாளர்கள்.", "documentsEn": ["Aadhaar Card", "Educational Certificates", "Community Certificate", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "கல்விச் சான்றிதழ்கள்", "சாதிச் சான்றிதழ்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 35, "category": "Education", "icon": "💰", "titleEn": "Student Scholarship Schemes", "titleTa": "மாணவர் கல்வி உதவித்தொகைத் திட்டங்கள்", "highlightsEn": ["Various state scholarships for school and college students."], "highlightsTa": ["பள்ளி, கல்லூரி மாணவர்களுக்கான பல்வேறு மாநில உதவித்தொகைகள்."], "eligibilityEn": "Depends on the scholarship: community, income and course.", "eligibilityTa": "உதவித்தொகையைப் பொறுத்து: சமூகம், வருமானம், படிப்பு.", "documentsEn": ["School/College ID", "Aadhaar Card", "Community Certificate", "Income Certificate"], "documentsTa": ["பள்ளி/கல்லூரி அடையாள அட்டை", "ஆதார் அட்டை", "சாதிச் சான்றிதழ்", "வருமானச் சான்றிதழ்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 36, "category": "Farmers", "icon": "🚜", "titleEn": "Agricultural Welfare Assistance Schemes", "titleTa": "விவசாய நல உதவித் திட்டங்கள்", "highlightsEn": ["Subsidies on seeds, inputs, equipment and crop support."], "highlightsTa": ["விதை, இடுபொருட்கள், கருவிகள் மற்றும் பயிர் ஆதரவு மானியங்கள்."], "eligibilityEn": "Farmers registered with the Agriculture department.", "eligibilityTa": "வேளாண் துறையில் பதிவு பெற்ற விவசாயிகள்.", "documentsEn": ["Aadhaar Card", "Land Records (Patta/Chitta)", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "நில ஆவணங்கள் (பட்டா/சிட்டா)", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 37, "category": "Employment", "icon": "👩‍💼", "titleEn": "Women Entrepreneurs Development Scheme", "titleTa": "பெண்கள் தொழில் முனைவோர் மேம்பாட்டுத் திட்டம்", "highlightsEn": ["Training, loan and subsidy support for women starting businesses."], "highlightsTa": ["தொழில் தொடங்கும் பெண்களுக்கு பயிற்சி, கடன் மற்றும் மானிய உதவி."], "eligibilityEn": "Women entrepreneurs of Tamil Nadu with a business plan.", "eligibilityTa": "தொழில் திட்டம் உள்ள தமிழ்நாட்டுப் பெண் தொழில்முனைவோர்.", "documentsEn": ["Aadhaar Card", "Educational Certificates", "Community Certificate", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "கல்விச் சான்றிதழ்கள்", "சாதிச் சான்றிதழ்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."},
+            {"id": 38, "category": "Women", "icon": "🏨", "titleEn": "Working Women's Hostel Scheme \"Thozhi\"", "titleTa": "\"தோழி\" பணிபுரியும் மகளிர் விடுதித் திட்டம்", "highlightsEn": ["Safe and affordable hostels for working women."], "highlightsTa": ["பணிபுரியும் பெண்களுக்கு பாதுகாப்பான, குறைந்த செலவில் விடுதி."], "eligibilityEn": "Working women (employed or training) within the income limit.", "eligibilityTa": "வருமான வரம்புக்குள் பணிபுரியும் அல்லது பயிற்சி பெறும் பெண்கள்.", "documentsEn": ["Aadhaar Card", "Smart Ration Card", "Income Certificate", "Bank Passbook"], "documentsTa": ["ஆதார் அட்டை", "ஸ்மார்ட் ரேஷன் கார்டு", "வருமானச் சான்றிதழ்", "வங்கி கணக்கு புத்தகம்"], "stepsEn": ["1. Apply through your school/college, e-Sevai or the department office.\n2. Submit the documents.\n3. Verification and approval."], "stepsTa": ["1. பள்ளி/கல்லூரி, இ-சேவை அல்லது துறை அலுவலகம் மூலம் விண்ணப்பிக்கவும்.\n2. ஆவணங்களைச் சமர்ப்பிக்கவும்.\n3. சரிபார்ப்பு மற்றும் ஒப்புதல்."], "infoEn": "Amounts and rules can change. Confirm with the concerned department or the official TN portal before applying.", "infoTa": "தொகை மற்றும் விதிகள் மாறக்கூடும். விண்ணப்பிக்கும் முன் சம்பந்தப்பட்ட துறை அல்லது அதிகாரப்பூர்வ தமிழ்நாடு இணையதளத்தில் உறுதி செய்யவும்."}
+        ];
+
+        // Translation Dictionary
+        const I18N = {
+            en: {
+                titleTa: "தமிழ்நாடு",
+                subtitle: "WELFARE SCHEMES",
+                browseTitle: "Browse Categories",
+                browseSub: "Select a department category to view active schemes",
+                homeBannerTitle: "Tamil Nadu Government",
+                homeBannerSub: "Welfare Schemes Directory",
+                homeBannerCats: "Education • Women • Pension • Farmers • Employment • Health",
+                exploreBtn: "Tap to explore all →",
+                cmQuote: '"Ensuring welfare reaches every doorstep in Tamil Nadu."',
+                srNo: "Sr. No",
+                schemeNameHeader: "Scheme Name",
+                bookmarksTitle: "Saved Schemes",
+                bookmarksSub: "Your quick reference scheme list",
+                modalHeaderTitle: "Scheme Details",
+                btnApplyNow: "Apply For Scheme",
+                lblHighlights: "Highlights",
+                lblEligibility: "Eligibility Requirements",
+                lblDocuments: "Required Documents",
+                lblSteps: "Steps to Apply",
+                lblInfo: "Important Information",
+                txtNavHome: "Home",
+                txtNavSchemes: "Schemes",
+                txtNavSaved: "Bookmarks",
+                applyModalTitle: "Scheme Application",
+                lblApplicantName: "Applicant Full Name",
+                lblAadhaar: "Aadhaar Card Number",
+                lblDistrict: "District",
+                lblPhone: "Mobile Number",
+                btnSubmitForm: "Submit Application"
+            },
+            ta: {
+                titleTa: "தமிழ்நாடு",
+                subtitle: "நலத்திட்டங்கள்",
+                browseTitle: "பிரிவுகளைத் தேர்ந்தெடுக்கவும்",
+                browseSub: "திட்டங்களைக் காண துறையைத் தேர்ந்தெடுக்கவும்",
+                homeBannerTitle: "தமிழ்நாடு அரசு",
+                homeBannerSub: "அரசு நலத்திட்டங்கள் வழிகாட்டி",
+                homeBannerCats: "கல்வி • மகளிர் • விவசாயிகள் • வேலைவாய்ப்பு • மருத்துவம்",
+                exploreBtn: "அனைத்தையும் பார்க்க →",
+                cmQuote: '"தமிழ்நாட்டின் ஒவ்வொரு வீட்டிற்கும் அரசின் நலத்திட்டங்கள் சேர்வதை உறுதி செய்தல்."',
+                srNo: "வ.எண்",
+                schemeNameHeader: "திட்டத்தின் பெயர்",
+                bookmarksTitle: "சேமிக்கப்பட்ட திட்டங்கள்",
+                bookmarksSub: "நீங்கள் சேமித்து வைத்த திட்டங்களின் பட்டியல்",
+                modalHeaderTitle: "திட்ட விவரங்கள்",
+                btnApplyNow: "திட்டத்திற்கு விண்ணப்பிக்க",
+                lblHighlights: "முக்கிய சிறப்பம்சங்கள்",
+                lblEligibility: "தகுதி வரம்புகள்",
+                lblDocuments: "தேவையான ஆவணங்கள்",
+                lblSteps: "விண்ணப்பிக்கும் முறை",
+                lblInfo: "முக்கிய குறிப்பு",
+                txtNavHome: "முகப்பு",
+                txtNavSchemes: "திட்டங்கள்",
+                txtNavSaved: "சேமித்தவை",
+                applyModalTitle: "திட்ட விண்ணப்பம்",
+                lblApplicantName: "விண்ணப்பதாரர் முழுப் பெயர்",
+                lblAadhaar: "ஆதார் எண்",
+                lblDistrict: "மாவட்டம்",
+                lblPhone: "கைபேசி எண்",
+                btnSubmitForm: "விண்ணப்பத்தைச் சமர்ப்பிக்க"
+            }
+        };
+
+        // Application Logic Core Class
+        class App {
+            constructor() {
+                this.lang = 'en'; // 'en' or 'ta'
+                this.currentTab = 'home';
+                this.selectedCategory = 'All';
+                this.searchQuery = '';
+                this.bookmarks = JSON.parse(localStorage.getItem('tn_scheme_bookmarks')) || [];
+                this.activeModalSchemeId = null;
+
+                this.init();
+            }
+
+            init() {
+                this.renderCategories();
+                this.renderChips();
+                this.renderSchemes();
+                this.renderBookmarks();
+                this.updateUIStrings();
+                if (typeof loadSchemeUpdates === 'function') loadSchemeUpdates(false);
+            }
+
+            toggleLanguage() {
+                this.lang = this.lang === 'en' ? 'ta' : 'en';
+                this.updateUIStrings();
+                this.renderCategories();
+                this.renderChips();
+                this.renderSchemes();
+                this.renderBookmarks();
+                if (this.activeModalSchemeId) {
+                    this.populateModal(this.activeModalSchemeId);
+                }
+                this.showToast(this.lang === 'en' ? "Switched to English" : "தமிழுக்கு மாற்றப்பட்டது");
+            }
+
+            updateUIStrings() {
+                const t = I18N[this.lang];
+                document.getElementById('appSubtitle').innerText = t.subtitle;
+                document.getElementById('txtBrowseTitle').innerText = t.browseTitle;
+                document.getElementById('txtBrowseSub').innerText = t.browseSub;
+                document.getElementById('txtHomeBannerTitle').innerText = t.homeBannerTitle;
+                document.getElementById('txtHomeBannerSub').innerText = t.homeBannerSub;
+                document.getElementById('txtHomeBannerCats').innerText = t.homeBannerCats;
+                document.getElementById('txtExploreBtn').innerText = t.exploreBtn;
+                document.getElementById('txtCmQuote').innerText = t.cmQuote;
+                document.getElementById('txtSrNo').innerText = t.srNo;
+                document.getElementById('txtSchemeNameHeader').innerText = t.schemeNameHeader;
+                document.getElementById('txtBookmarksTitle').innerText = t.bookmarksTitle;
+                document.getElementById('txtBookmarksSub').innerText = t.bookmarksSub;
+                document.getElementById('txtModalHeaderTitle').innerText = t.modalHeaderTitle;
+                document.getElementById('btnApplyNow').innerText = t.btnApplyNow;
+                document.getElementById('lblHighlights').innerText = t.lblHighlights;
+                document.getElementById('lblEligibility').innerText = t.lblEligibility;
+                document.getElementById('lblDocuments').innerText = t.lblDocuments;
+                document.getElementById('lblSteps').innerText = t.lblSteps;
+                document.getElementById('lblInfo').innerText = t.lblInfo;
+                document.getElementById('txtNavHome').innerText = t.txtNavHome;
+                document.getElementById('txtNavSchemes').innerText = t.txtNavSchemes;
+                document.getElementById('txtNavSaved').innerText = t.txtNavSaved;
+                document.getElementById('txtApplyModalTitle').innerText = t.applyModalTitle;
+                document.getElementById('lblApplicantName').innerText = t.lblApplicantName;
+                document.getElementById('lblAadhaar').innerText = t.lblAadhaar;
+                document.getElementById('lblDistrict').innerText = t.lblDistrict;
+                document.getElementById('lblPhone').innerText = t.lblPhone;
+                document.getElementById('btnSubmitForm').innerText = t.btnSubmitForm;
+            }
+
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                document.getElementById('screenHome').classList.add('hidden');
+                document.getElementById('screenList').classList.add('hidden');
+                document.getElementById('screenBookmarks').classList.add('hidden');
+
+                // Navigation Button Styling Reset
+                ['Home', 'Schemes', 'Bookmarks'].forEach(t => {
+                    const btn = document.getElementById(`tabBtn${t}`);
+                    btn.classList.remove('text-tnHeader');
+                    btn.classList.add('text-slate-400');
+                });
+
+                if (tabName === 'home') {
+                    document.getElementById('screenHome').classList.remove('hidden');
+                    document.getElementById('tabBtnHome').classList.add('text-tnHeader');
+                    document.getElementById('headerNavIcon').className = "fa-solid fa-bars text-xl";
+                } else if (tabName === 'schemes') {
+                    document.getElementById('screenList').classList.remove('hidden');
+                    document.getElementById('tabBtnSchemes').classList.add('text-tnHeader');
+                    document.getElementById('headerNavIcon').className = "fa-solid fa-arrow-left text-xl";
+                } else if (tabName === 'bookmarks') {
+                    document.getElementById('screenBookmarks').classList.remove('hidden');
+                    document.getElementById('tabBtnBookmarks').classList.add('text-tnHeader');
+                    document.getElementById('headerNavIcon').className = "fa-solid fa-arrow-left text-xl";
+                }
+            }
+
+            navigateBack() {
+                if (this.currentTab !== 'home') {
+                    this.switchTab('home');
+                }
+            }
+
+            openCategory(cat) {
+                this.selectedCategory = cat;
+                this.renderChips();
+                this.renderSchemes();
+                this.switchTab('schemes');
+            }
+
+            renderCategories() {
+                const categories = [
+                    { name: "Education", icon: "🎓", titleEn: "Education Schemes", titleTa: "கல்வித் திட்டங்கள்" },
+                    { name: "Women", icon: "👩", titleEn: "Women Welfare Schemes", titleTa: "மகளிர் நலத் திட்டங்கள்" },
+                    { name: "Farmers", icon: "🌾", titleEn: "Agriculture Schemes", titleTa: "விவசாயத் திட்டங்கள்" },
+                    { name: "Employment", icon: "💼", titleEn: "Employment Schemes", titleTa: "வேலைவாய்ப்புத் திட்டங்கள்" },
+                    { name: "Health", icon: "🏥", titleEn: "Health Schemes", titleTa: "சுகாதாரத் திட்டங்கள்" },
+                    { name: "Pension", icon: "🧓", titleEn: "Pension Schemes", titleTa: "ஓய்வூதியத் திட்டங்கள்" },
+                    { name: "Differently Abled", icon: "♿", titleEn: "Differently Abled Welfare", titleTa: "மாற்றுத்திறனாளிகள் நலன்" },
+                    { name: "Housing", icon: "🏠", titleEn: "Housing & Hostel Schemes", titleTa: "வீடு மற்றும் விடுதித் திட்டங்கள்" }
+                ];
+
+                const container = document.getElementById('categoryCardsList');
+                container.innerHTML = categories.map(c => `
+                    <div onclick="app.openCategory('${c.name}')" 
+                         class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:border-amber-300 hover:shadow-md transition">
+                        <div class="flex items-center space-x-3.5">
+                            <span class="text-3xl">${c.icon}</span>
+                            <span class="font-bold text-slate-800 text-sm">${this.lang === 'en' ? c.titleEn : c.titleTa}</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-sm"></i>
+                    </div>
+                `).join('');
+            }
+
+            renderChips() {
+                const cats = ['All', 'Education', 'Women', 'Pension', 'Differently Abled', 'Farmers', 'Employment', 'Housing', 'Health'];
+                const container = document.getElementById('categoryChips');
+                container.innerHTML = cats.map(cat => {
+                    const active = this.selectedCategory === cat;
+                    return `
+                        <button onclick="app.filterCategory('${cat}')" 
+                                class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${active ? 'bg-tnNavy text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                            ${cat}
+                        </button>
+                    `;
+                }).join('');
+            }
+
+            filterCategory(cat) {
+                this.selectedCategory = cat;
+                this.renderChips();
+                this.renderSchemes();
+            }
+
+            handleSearch(query) {
+                this.searchQuery = query.toLowerCase().trim();
+                const clearBtn = document.getElementById('clearSearchBtn');
+                if (this.searchQuery) {
+                    clearBtn.classList.remove('hidden');
+                    if (this.currentTab === 'home') {
+                        this.switchTab('schemes');
+                    }
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+                this.renderSchemes();
+            }
+
+            clearSearch() {
+                document.getElementById('searchInput').value = '';
+                this.handleSearch('');
+            }
+
+            getFilteredSchemes() {
+                return SCHEMES_DATA.filter(s => {
+                    const matchCategory = this.selectedCategory === 'All' || s.category === this.selectedCategory;
+                    const titleToSearch = (s.titleEn + ' ' + s.titleTa).toLowerCase();
+                    const matchSearch = titleToSearch.includes(this.searchQuery);
+                    return matchCategory && matchSearch;
+                });
+            }
+
+            renderSchemes() {
+                const container = document.getElementById('schemesContainer');
+                const list = this.getFilteredSchemes();
+
+                if (list.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-8 text-center text-slate-400">
+                            <i class="fa-solid fa-folder-open text-3xl mb-2"></i>
+                            <p class="text-xs">${this.lang === 'en' ? 'No welfare schemes found.' : 'திட்டங்கள் எதுவும் இல்லை.'}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = list.map((scheme, idx) => {
+                    const isBookmarked = this.bookmarks.includes(scheme.id);
+                    const title = this.lang === 'en' ? scheme.titleEn : scheme.titleTa;
+                    return `
+                        <div class="p-3.5 flex items-center hover:bg-amber-50/50 transition cursor-pointer" onclick="app.openSchemeModal(${scheme.id})">
+                            <span class="w-12 text-center text-xs font-bold text-slate-400">${idx + 1}</span>
+                            <div class="flex-1 ml-2 pr-2">
+                                <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md uppercase">${scheme.category}</span>
+                                <h4 class="text-xs font-bold text-tnBlueText mt-1 leading-snug line-clamp-2">${title}</h4>
+                            </div>
+                            <button onclick="event.stopPropagation(); app.toggleBookmark(${scheme.id})" class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-amber-500 transition">
+                                <i class="${isBookmarked ? 'fa-solid fa-bookmark text-amber-500' : 'fa-regular fa-bookmark'}"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            toggleBookmark(id) {
+                if (this.bookmarks.includes(id)) {
+                    this.bookmarks = this.bookmarks.filter(bId => bId !== id);
+                    this.showToast(this.lang === 'en' ? "Removed from bookmarks" : "சேமிப்பிலிருந்து நீக்கப்பட்டது");
+                } else {
+                    this.bookmarks.push(id);
+                    this.showToast(this.lang === 'en' ? "Added to bookmarks" : "சேமிக்கப்பட்டது");
+                }
+                localStorage.setItem('tn_scheme_bookmarks', JSON.stringify(this.bookmarks));
+                this.renderSchemes();
+                this.renderBookmarks();
+                if (this.activeModalSchemeId === id) {
+                    this.updateModalBookmarkIcon(id);
+                }
+            }
+
+            renderBookmarks() {
+                const container = document.getElementById('bookmarksContainer');
+                const badge = document.getElementById('bookmarkCountBadge');
+                badge.innerText = this.bookmarks.length;
+
+                const bookmarkedSchemes = SCHEMES_DATA.filter(s => this.bookmarks.includes(s.id));
+
+                if (bookmarkedSchemes.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-8 text-center text-slate-400 bg-white rounded-2xl border border-slate-100">
+                            <i class="fa-regular fa-bookmark text-3xl mb-2"></i>
+                            <p class="text-xs">${this.lang === 'en' ? 'No saved schemes yet.' : 'சேமிக்கப்பட்ட திட்டங்கள் எதுவும் இல்லை.'}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = bookmarkedSchemes.map(scheme => {
+                    const title = this.lang === 'en' ? scheme.titleEn : scheme.titleTa;
+                    return `
+                        <div onclick="app.openSchemeModal(${scheme.id})" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between cursor-pointer hover:border-amber-300 transition">
+                            <div class="flex-1 pr-3">
+                                <span class="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded-md uppercase">${scheme.category}</span>
+                                <h4 class="text-xs font-bold text-tnNavy mt-1.5 leading-snug">${title}</h4>
+                            </div>
+                            <button onclick="event.stopPropagation(); app.toggleBookmark(${scheme.id})" class="text-amber-500 hover:text-slate-400 p-2 text-sm">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            openSchemeModal(id) {
+                this.activeModalSchemeId = id;
+                this.populateModal(id);
+                document.getElementById('schemeDetailsModal').classList.remove('hidden');
+            }
+
+            populateModal(id) {
+                const scheme = SCHEMES_DATA.find(s => s.id === id);
+                if (!scheme) return;
+
+                document.getElementById('modalCategoryTag').innerText = scheme.category;
+                document.getElementById('modalSchemeTitle').innerText = this.lang === 'en' ? scheme.titleEn : scheme.titleTa;
+
+                const highlights = this.lang === 'en' ? scheme.highlightsEn : scheme.highlightsTa;
+                document.getElementById('modalHighlights').innerHTML = highlights.map(h => `<p>• ${h}</p>`).join('');
+
+                document.getElementById('modalEligibility').innerText = this.lang === 'en' ? scheme.eligibilityEn : scheme.eligibilityTa;
+
+                const docs = this.lang === 'en' ? scheme.documentsEn : scheme.documentsTa;
+                document.getElementById('modalDocuments').innerHTML = docs.map(d => `<p>• ${d}</p>`).join('');
+
+                document.getElementById('modalSteps').innerText = this.lang === 'en' ? scheme.stepsEn.join('\n') : scheme.stepsTa.join('\n');
+                document.getElementById('modalInfo').innerText = this.lang === 'en' ? scheme.infoEn : (scheme.infoTa || scheme.infoEn);
+
+                this.updateModalBookmarkIcon(id);
+            }
+
+            updateModalBookmarkIcon(id) {
+                const btn = document.getElementById('modalBookmarkBtn');
+                const isBookmarked = this.bookmarks.includes(id);
+                btn.innerHTML = `<i class="${isBookmarked ? 'fa-solid fa-bookmark text-amber-300' : 'fa-regular fa-bookmark'}"></i>`;
+            }
+
+            toggleModalBookmark() {
+                if (this.activeModalSchemeId) {
+                    this.toggleBookmark(this.activeModalSchemeId);
+                }
+            }
+
+            closeModal() {
+                document.getElementById('schemeDetailsModal').classList.add('hidden');
+                this.activeModalSchemeId = null;
+            }
+
+            openApplicationForm() {
+                const scheme = SCHEMES_DATA.find(s => s.id === this.activeModalSchemeId);
+                if (!scheme) return;
+                const name = ((scheme.titleEn || '') + ' ' + (scheme.titleTa || '')).toLowerCase();
+                let portal = scheme.officialUrl || '';
+                if (!portal && /naan mudhalvan/.test(name)) portal = 'https://naanmudhalvan.tn.gov.in/';
+                if (!portal && /pudhumai penn|puthumai penn/.test(name)) portal = 'https://www.pudhumaipenn.tn.gov.in/';
+                if (!portal && /makkalai thedi|makkalai/.test(name)) portal = 'https://www.tn.gov.in/';
+                if (!portal) portal = 'https://www.tnesevai.tn.gov.in/citizen/';
+                window.open(portal, '_blank', 'noopener,noreferrer');
+                this.showToast(this.lang === 'en' ? 'Opening the government portal. Complete your application there.' : 'அரசு இணையதளம் திறக்கப்படுகிறது. அங்கே விண்ணப்பத்தை முடிக்கவும்.');
+            }
+
+            closeAppForm() {
+                document.getElementById('applicationFormModal').classList.add('hidden');
+            }
+
+            submitApplication(e) {
+                e.preventDefault();
+                this.closeAppForm();
+                this.closeModal();
+                const refNo = "TN-" + Math.floor(100000 + Math.random() * 900000);
+                const msg = this.lang === 'en' 
+                    ? `Application Submitted! Ref: ${refNo}` 
+                    : `விண்ணப்பம் சமர்ப்பிக்கப்பட்டது! எண்: ${refNo}`;
+                this.showToast(msg);
+                document.getElementById('schemeAppForm').reset();
+            }
+
+            showToast(msg) {
+                const toast = document.getElementById('toast');
+                document.getElementById('toastMsg').innerText = msg;
+                toast.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'pointer-events-none');
+                }, 3000);
+            }
+        }
+
+
+        async function loadSchemeUpdates(forceScan = false) {
+            const list = document.getElementById('schemeUpdatesList');
+            const status = document.getElementById('updatesStatus');
+            const ta = typeof app !== 'undefined' && app.lang === 'ta';
+            if (!list || !status) return;
+            status.textContent = ta ? 'அதிகாரப்பூர்வ ஆதாரங்களைச் சரிபார்க்கிறது…' : 'Checking official sources…';
+            try {
+                const response = await fetch(forceScan ? '/api/scan-now' : '/api/updates', forceScan ? { method: 'POST' } : {});
+                if (!response.ok) throw new Error('Backend unavailable');
+                const data = await response.json();
+                const checked = data.lastChecked ? new Date(data.lastChecked).toLocaleString() : (ta ? 'இன்னும் சரிபார்க்கப்படவில்லை' : 'Not checked yet');
+                status.textContent = (ta ? 'கடைசியாகச் சரிபார்த்தது: ' : 'Last checked: ') + checked;
+                const items = Array.isArray(data.items) ? data.items : [];
+                if (!items.length) {
+                    list.innerHTML = `<p class="text-sm text-slate-600">${ta ? 'புதிய இணைப்புகள் இன்னும் கண்டறியப்படவில்லை. அடுத்த திட்டமிட்ட சரிபார்ப்புக்குப் பிறகு மீண்டும் பார்க்கவும்.' : 'No new matching links detected yet. Check again after the next scheduled scan.'}</p>`;
+                    return;
+                }
+                list.innerHTML = items.slice(0, 12).map(item => `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-blue-100 bg-white p-3 hover:border-blue-300"><div class="font-semibold text-sm text-tnNavy">${escapeHtml(item.title)}</div><div class="mt-1 text-[11px] text-slate-500">${escapeHtml(item.source)} · ${new Date(item.detectedAt).toLocaleDateString()}</div><div class="mt-1 text-[10px] text-amber-700">${ta ? 'சரிபார்க்க வேண்டிய தானியங்கி கண்டறிதல்' : 'Automatically detected — verify details'}</div></a>`).join('');
+            } catch (e) {
+                status.textContent = ta ? 'Backend இணைப்பு இல்லை' : 'Backend not connected';
+                list.innerHTML = `<p class="text-sm text-slate-600">${ta ? 'தானியங்கி புதுப்பிப்புகளுக்கு, இந்த செயலியை backend server மூலம் இயக்கவும்.' : 'To receive shared automatic updates, run this app through its backend server (START_PROJECT.bat), not by opening the HTML file directly.'}</p>`;
+            }
+        }
+        function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+        // Prototype-only login. Replace with Firebase Authentication or a secure backend for production.
+        let loginCreateMode = false;
+        function setAppLanguage(lang) {
+            if (typeof app !== 'undefined') {
+                app.lang = lang;
+                app.updateUIStrings(); app.renderCategories(); app.renderChips(); app.renderSchemes(); app.renderBookmarks();
+            }
+            const chat = document.getElementById('aiChatPanel');
+            if (chat && typeof updateChatLanguage === 'function') updateChatLanguage();
+            const ta = lang === 'ta';
+            document.getElementById('loginHeading').textContent = ta ? 'மீண்டும் வரவேற்கிறோம்' : 'Welcome back';
+            document.getElementById('loginSubheading').textContent = ta ? 'நலத்திட்டங்களைப் பாருங்கள், சேமியுங்கள், உங்கள் மொழியில் உதவி பெறுங்கள்.' : 'Sign in to explore welfare schemes, save useful schemes and get multilingual guidance.';
+            document.getElementById('loginEmailLabel').textContent = ta ? 'மின்னஞ்சல் முகவரி' : 'Email address';
+            document.getElementById('loginPasswordLabel').textContent = ta ? 'கடவுச்சொல்' : 'Password';
+            document.getElementById('loginSubmit').textContent = loginCreateMode ? (ta ? 'கணக்கை உருவாக்கு' : 'Create account') : (ta ? 'உள்நுழைக' : 'Sign in');
+            document.getElementById('loginModeToggle').textContent = loginCreateMode ? (ta ? 'ஏற்கனவே கணக்கு உள்ளதா? உள்நுழைக' : 'Already registered? Sign in') : (ta ? 'புதியவரா? கணக்கை உருவாக்கவும்' : 'New here? Create account');
+            document.getElementById('loginNote').textContent = ta ? 'இது மாதிரி உள்நுழைவு. உண்மையான பயன்பாட்டிற்கு பாதுகாப்பான backend தேவை.' : 'Demo sign-in for this prototype. Production login requires secure backend authentication.';
+            const logoutLabel = document.getElementById('logoutLabel');
+            if (logoutLabel) logoutLabel.textContent = ta ? 'வெளியேறு' : 'Log out';
+            const langIndicator = document.getElementById('langIndicator');
+            if (langIndicator) langIndicator.textContent = ta ? 'தமிழ்' : 'EN';
+        }
+        function logoutUser() {
+            localStorage.removeItem('tn_welfare_demo_user');
+            const form = document.getElementById('loginForm');
+            if (form) form.reset();
+            const error = document.getElementById('loginError');
+            if (error) error.classList.add('hidden');
+            loginCreateMode = false;
+            setAppLanguage(typeof app !== 'undefined' ? app.lang : 'en');
+            document.getElementById('loginGate').classList.remove('hidden');
+            const schemeModal = document.getElementById('schemeDetailsModal');
+            if (schemeModal) schemeModal.classList.add('hidden');
+        }
+        // Refresh the shared update feed periodically while the app is open.
+        setInterval(() => { if (!document.getElementById('loginGate')?.classList.contains('hidden')) loadSchemeUpdates(false); }, 5 * 60 * 1000);
+        document.getElementById('loginModeToggle').addEventListener('click', () => {
+            loginCreateMode = !loginCreateMode;
+            setAppLanguage(typeof app !== 'undefined' ? app.lang : 'en');
+        });
+        document.getElementById('loginForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const error = document.getElementById('loginError');
+            error.classList.add('hidden');
+            const accounts = JSON.parse(localStorage.getItem('tn_welfare_demo_accounts') || '{}');
+            if (loginCreateMode) {
+                if (accounts[email]) { error.textContent = 'An account already exists for this email. Please sign in.'; error.classList.remove('hidden'); return; }
+                accounts[email] = password;
+                localStorage.setItem('tn_welfare_demo_accounts', JSON.stringify(accounts));
+            } else if (!accounts[email] || accounts[email] !== password) {
+                error.textContent = 'No matching demo account. Create an account first or check your email/password.';
+                error.classList.remove('hidden'); return;
+            }
+            localStorage.setItem('tn_welfare_demo_user', email);
+            document.getElementById('loginGate').classList.add('hidden');
+        });
+        // Restore the demo session for convenience.
+        if (localStorage.getItem('tn_welfare_demo_user')) document.getElementById('loginGate').classList.add('hidden');
+
+        // Initialize Application Instance
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new App();
+        });
+    </script>
+<script>
+(() => {
+    const launcher = document.getElementById('aiChatLauncher');
+    const panel = document.getElementById('aiChatPanel');
+    const closeButton = document.getElementById('aiChatClose');
+    const form = document.getElementById('aiChatForm');
+    const input = document.getElementById('aiChatInput');
+    const messages = document.getElementById('aiChatMessages');
+    const sendButton = document.getElementById('aiChatSend');
+    const history = [];
+    let waiting = false;
+
+    const labels = {
+        en: {
+            title: 'AI Welfare Assistant', subtitle: 'Ask about Tamil Nadu schemes', welcome: 'Vanakkam! I can help you understand the schemes listed in this app. Tell me whether you are a student, job seeker, woman, farmer, or looking for another type of support.',
+            placeholder: 'Type your question…', disclaimer: 'AI guidance can be wrong. Confirm current rules with the official department. Do not share Aadhaar or bank details.',
+            quick: ['Student scholarships', 'Eligibility help', 'Required documents'], thinking: 'Checking the scheme information…', error: 'The live AI service is unavailable, so I will try to help using the scheme information already in this app.',
+            intro: 'I can help with Tamil Nadu welfare schemes. What would you like to know?'
+        },
+        ta: {
+            title: 'AI நலத்திட்ட உதவியாளர்', subtitle: 'தமிழ்நாடு திட்டங்கள் பற்றி கேளுங்கள்', welcome: 'வணக்கம்! இந்த செயலியில் உள்ள திட்டங்களைப் புரிந்துகொள்ள உதவுகிறேன். நீங்கள் மாணவரா, வேலை தேடுபவரா, விவசாயியா அல்லது வேறு உதவி தேடுகிறீர்களா என்று சொல்லுங்கள்.',
+            placeholder: 'உங்கள் கேள்வியை உள்ளிடுங்கள்…', disclaimer: 'AI பதிலில் தவறு இருக்கலாம். அதிகாரப்பூர்வ துறையில் தற்போதைய விதிகளை உறுதிப்படுத்தவும். ஆதார் அல்லது வங்கி விவரங்களைப் பகிர வேண்டாம்.',
+            quick: ['மாணவர் உதவித்தொகை', 'தகுதி விவரம்', 'தேவையான ஆவணங்கள்'], thinking: 'திட்ட விவரங்களைச் சரிபார்க்கிறது…', error: 'நேரடி AI சேவை கிடைக்கவில்லை. செயலியில் உள்ள திட்ட விவரங்களைப் பயன்படுத்தி உதவ முயற்சிக்கிறேன்.',
+            intro: 'தமிழ்நாடு நலத்திட்டங்கள் பற்றி உதவுகிறேன். என்ன தெரிந்துகொள்ள விரும்புகிறீர்கள்?'
+        }
+    };
+
+    function currentLanguage() { return typeof app !== 'undefined' && app.lang === 'ta' ? 'ta' : 'en'; }
+    function updateLanguage() {
+        const t = labels[currentLanguage()];
+        document.getElementById('aiChatTitle').textContent = t.title;
+        document.getElementById('aiChatSubtitle').textContent = t.subtitle;
+        document.getElementById('aiChatWelcome').textContent = t.welcome;
+        document.getElementById('aiChatInput').placeholder = t.placeholder;
+        document.getElementById('aiChatDisclaimer').textContent = t.disclaimer;
+        document.querySelectorAll('.ai-quick-question').forEach((b, i) => b.textContent = t.quick[i]);
+    }
+    function addMessage(text, role, id) {
+        const row = document.createElement('div');
+        row.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+        if (id) row.id = id;
+        const bubble = document.createElement('div');
+        bubble.className = 'max-w-[92%] rounded-2xl p-3 text-sm whitespace-pre-wrap break-words shadow-sm ' +
+            (role === 'user' ? 'rounded-tr-sm bg-tnNavy text-white' : 'rounded-tl-sm bg-white border border-slate-200 text-slate-700');
+        bubble.textContent = text;
+        row.appendChild(bubble);
+        messages.appendChild(row);
+        messages.scrollTop = messages.scrollHeight;
+        return row;
+    }
+    function getSchemeContext() {
+        if (typeof SCHEMES_DATA === 'undefined' || !Array.isArray(SCHEMES_DATA)) return [];
+        return SCHEMES_DATA.map(s => ({
+            name: currentLanguage() === 'ta' ? s.titleTa : s.titleEn,
+            category: s.category,
+            highlights: currentLanguage() === 'ta' ? s.highlightsTa : s.highlightsEn,
+            eligibility: currentLanguage() === 'ta' ? s.eligibilityTa : s.eligibilityEn,
+            documents: currentLanguage() === 'ta' ? s.documentsTa : s.documentsEn,
+            steps: currentLanguage() === 'ta' ? s.stepsTa : s.stepsEn,
+            notice: currentLanguage() === 'ta' ? (s.infoTa || s.infoEn) : s.infoEn
+        }));
+    }
+    function localSchemeAnswer(question) {
+        const lang = currentLanguage();
+        const q = question.toLowerCase();
+        const schemes = getSchemeContext();
+        const tamil = lang === 'ta';
+        const matches = schemes.filter(s => {
+            const haystack = [s.name, s.category, ...(s.highlights || []), s.eligibility, ...(s.documents || [])].join(' ').toLowerCase();
+            const words = q.split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 2);
+            return words.some(w => haystack.includes(w));
+        }).slice(0, 4);
+        const asksDocs = /document|certificate|proof|ஆவண|சான்று/.test(q);
+        const asksEligibility = /eligib|qualif|who can|criteria|தகுதி|யாருக்கு/.test(q);
+        const asksStudent = /student|scholar|college|school|education|மாணவர்|கல்வி|உதவித்தொகை/.test(q);
+        const selected = matches.length ? matches : (asksStudent ? schemes.filter(s => /student|education|scholar|மாணவர்|கல்வி|scholarship/i.test([s.name,s.category,(s.highlights||[]).join(' ')].join(' '))).slice(0,4) : []);
+        if (!selected.length) {
+            return tamil
+              ? 'இந்தக் கேள்விக்கான உறுதியான விவரம் செயலியில் கிடைக்கவில்லை. திட்டங்களின் பெயர் அல்லது “மாணவர் உதவித்தொகை”, “தகுதி”, “தேவையான ஆவணங்கள்” என்று கேளுங்கள். தற்போதைய விதிகளை அதிகாரப்பூர்வ தமிழ்நாடு அரசு துறையில் உறுதிப்படுத்தவும்.'
+              : 'I could not find a matching scheme in the information currently loaded in this app. Try asking about a scheme by name, student scholarships, eligibility, or required documents. Please confirm current rules with the relevant official Tamil Nadu government department.';
+        }
+        const lines = selected.map(s => {
+            const parts = [s.name || (tamil ? 'திட்டம்' : 'Scheme')];
+            if (asksEligibility && s.eligibility) parts.push((tamil ? 'தகுதி: ' : 'Eligibility: ') + s.eligibility);
+            else if (asksDocs && s.documents && s.documents.length) parts.push((tamil ? 'ஆவணங்கள்: ' : 'Documents: ') + s.documents.join(', '));
+            else if (s.highlights && s.highlights.length) parts.push(s.highlights.slice(0,2).join('; '));
+            else if (s.eligibility) parts.push((tamil ? 'தகுதி: ' : 'Eligibility: ') + s.eligibility);
+            if (s.notice) parts.push(s.notice);
+            return '• ' + parts.join('\n');
+        });
+        lines.push(tamil ? '\nகுறிப்பு: இவை செயலியில் உள்ள தகவல்கள் மட்டுமே. தற்போதைய தகுதி, ஆவணங்கள் மற்றும் காலக்கெடுவை அதிகாரப்பூர்வ துறையில் உறுதிப்படுத்தவும்.' : '\nNote: This is based only on the app’s listed information. Confirm current eligibility, documents, and deadlines with the official department.');
+        return lines.join('\n\n');
+    }
+
+    async function sendMessage(text) {
+        const clean = text.trim();
+        if (!clean || waiting) return;
+        addMessage(clean, 'user');
+        input.value = '';
+        waiting = true;
+        sendButton.disabled = true;
+        const t = labels[currentLanguage()];
+        const pending = addMessage(t.thinking, 'assistant', 'aiChatPending');
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: clean, language: currentLanguage(), history: history.slice(-8), schemes: getSchemeContext() })
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || 'Request failed');
+            pending.remove();
+            const reply = typeof data.reply === 'string' && data.reply.trim() ? data.reply : t.error;
+            addMessage(reply, 'assistant');
+            history.push({ role: 'user', content: clean }, { role: 'assistant', content: reply });
+            if (history.length > 12) history.splice(0, history.length - 12);
+        } catch (error) {
+            pending.remove();
+            const reply = localSchemeAnswer(clean);
+            addMessage(reply, 'assistant');
+            history.push({ role: 'user', content: clean }, { role: 'assistant', content: reply });
+            if (history.length > 12) history.splice(0, history.length - 12);
+            console.warn('Live AI unavailable; answered from local scheme data:', error);
+        } finally {
+            waiting = false;
+            sendButton.disabled = false;
+            input.focus();
+        }
+    }
+    launcher.addEventListener('click', () => { panel.classList.remove('hidden'); panel.classList.add('flex'); launcher.classList.add('hidden'); updateLanguage(); input.focus(); });
+    closeButton.addEventListener('click', () => { panel.classList.add('hidden'); panel.classList.remove('flex'); launcher.classList.remove('hidden'); });
+    form.addEventListener('submit', e => { e.preventDefault(); sendMessage(input.value); });
+    document.querySelectorAll('.ai-quick-question').forEach(button => button.addEventListener('click', () => sendMessage(button.textContent)));
+    // Follow the existing app's language toggle without altering its implementation.
+    const langButton = document.querySelector('button[onclick="app.toggleLanguage()"]');
+    if (langButton) langButton.addEventListener('click', () => setTimeout(updateLanguage, 0));
+    updateLanguage();
+})();
+</script>
+</body>
+</html>
